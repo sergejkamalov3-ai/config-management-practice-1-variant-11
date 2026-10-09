@@ -1,0 +1,16 @@
+ls
+ls -a
+ls -l
+ls -al /
+ls /welcome.txt /empty
+cd /home/student
+ls .
+cd docs
+find
+find / -name *.txt
+find / -type d
+find /home -name *.txt -type f
+cd ..
+cd
+clear
+exit

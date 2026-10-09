@@ -1,21 +1,29 @@
 """Разбор команд и интерактивный цикл."""
 
+from . import commands
 from .errors import ShellError
 from .vfs import VFS
 
 
 class Shell:
-    """Минимальная оболочка с командами-заглушками."""
+    """CLI-оболочка над виртуальной файловой системой."""
 
     def __init__(self, name="demo"):
-        """Задать имя виртуальной файловой системы."""
+        """Создать пустую VFS и таблицу доступных команд."""
         self.vfs = VFS(name)
+        self.cwd = "/"
         self.running = True
+        self.commands = {
+            "ls": commands.ls,
+            "cd": commands.cd,
+            "find": commands.find,
+            "clear": commands.clear,
+        }
 
     @property
     def prompt(self):
-        """Вернуть приглашение ко вводу."""
-        return f"{self.vfs.name}:/$ "
+        """Вернуть имя VFS и текущий путь в приглашении."""
+        return f"{self.vfs.name}:{self.cwd}$ "
 
     def execute(self, line):
         """Разделить ввод по пробелам и выполнить команду."""
@@ -27,12 +35,11 @@ class Shell:
             if args:
                 raise ShellError("exit: аргументы не поддерживаются")
             self.running = False
-        elif command in ("ls", "cd"):
-            if len(args) > 1:
-                raise ShellError(f"{command}: слишком много аргументов")
-            print(f"{command}: {args}")
-        else:
+            return
+        handler = self.commands.get(command)
+        if handler is None:
             raise ShellError(f"неизвестная команда: {command}")
+        handler(self, args)
 
     def repl(self):
         """Читать команды до exit или конца ввода."""

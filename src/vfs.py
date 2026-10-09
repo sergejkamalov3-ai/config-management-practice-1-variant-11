@@ -141,3 +141,49 @@ class VFS:
             return self.nodes[path]
         except KeyError as error:
             raise ShellError(f"нет такого файла или каталога: {path}") from error
+
+    def require(self, path, bits):
+        """Проверить биты владельца: эмулятор работает как владелец."""
+        node = self.get(path)
+        if (node.mode & bits) != bits:
+            raise ShellError(f"доступ запрещен: {path}")
+
+    def directory(self, path):
+        """Проверить, что узел является каталогом."""
+        if self.get(path).kind != "dir":
+            raise ShellError(f"не является каталогом: {path}")
+
+    def resolve(self, path, cwd="/"):
+        """Обойти каждый компонент, проверяя существование и право x."""
+        current = "/" if path.startswith("/") else cwd
+        for part in path.split("/"):
+            if not part:
+                continue
+            self.directory(current)
+            self.require(current, 0o100)
+            if part == ".":
+                continue
+            if part == "..":
+                current = posixpath.dirname(current) or "/"
+            else:
+                current = self.normalize(part, current)
+                self.get(current)
+        if path.endswith("/"):
+            self.directory(current)
+        return current
+
+    def children(self, path):
+        """Вернуть отсортированные непосредственные дочерние пути."""
+        self.directory(path)
+        self.require(path, 0o500)
+        return sorted(p for p in self.nodes if p != "/"
+                      and posixpath.dirname(p) == path)
+
+    def walk(self, path):
+        """Обойти дерево итеративно без зависимости от глубины рекурсии."""
+        pending = [path]
+        while pending:
+            current = pending.pop()
+            yield current
+            if self.get(current).kind == "dir":
+                pending.extend(reversed(self.children(current)))

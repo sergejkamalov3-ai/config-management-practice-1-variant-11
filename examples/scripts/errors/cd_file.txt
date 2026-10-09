@@ -1,0 +1,2 @@
+cd /welcome.txt
+exit

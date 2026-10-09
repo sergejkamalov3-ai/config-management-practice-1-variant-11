@@ -15,12 +15,12 @@ class ShellTests(unittest.TestCase):
         """Создать новую оболочку."""
         self.shell = Shell()
 
-    def test_stub(self):
+    def test_parser(self):
         """Парсер разделяет последовательности пробелов."""
         output = io.StringIO()
         with redirect_stdout(output):
-            self.shell.execute("  ls    /home  ")
-        self.assertEqual(output.getvalue(), "ls: ['/home']\n")
+            self.shell.execute("  find    /  ")
+        self.assertEqual(output.getvalue(), "/\n")
 
     def test_empty(self):
         """Пустая строка ничего не делает."""

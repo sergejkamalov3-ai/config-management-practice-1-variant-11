@@ -16,3 +16,5 @@
 
 Этап 3: загрузка JSON VFS в память, проверка дерева и base64.
 Примеры: `examples/vfs/`. Проверка: `sh scripts/test_vfs.sh`.
+
+Этап 4: `ls [-al]`, `cd`, `find [-name шаблон] [-type f|d]`, `clear`. Проверка: `sh scripts/test_commands.sh`.
