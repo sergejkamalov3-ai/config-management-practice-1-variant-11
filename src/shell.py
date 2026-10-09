@@ -1,6 +1,7 @@
 """Разбор команд и интерактивный цикл."""
 
 from .errors import ShellError
+from .vfs import VFS
 
 
 class Shell:
@@ -8,13 +9,13 @@ class Shell:
 
     def __init__(self, name="demo"):
         """Задать имя виртуальной файловой системы."""
-        self.name = name
+        self.vfs = VFS(name)
         self.running = True
 
     @property
     def prompt(self):
         """Вернуть приглашение ко вводу."""
-        return f"{self.name}:/$ "
+        return f"{self.vfs.name}:/$ "
 
     def execute(self, line):
         """Разделить ввод по пробелам и выполнить команду."""

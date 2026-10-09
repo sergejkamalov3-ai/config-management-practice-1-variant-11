@@ -1,0 +1,51 @@
+{
+  "name": "deep",
+  "entries": [
+    {
+      "path": "/home",
+      "type": "dir",
+      "mode": "755"
+    },
+    {
+      "path": "/home/student",
+      "type": "dir",
+      "mode": "755"
+    },
+    {
+      "path": "/home/student/docs",
+      "type": "dir",
+      "mode": "755"
+    },
+    {
+      "path": "/empty",
+      "type": "dir",
+      "mode": "755"
+    },
+    {
+      "path": "/.hidden",
+      "type": "dir",
+      "mode": "755"
+    },
+    {
+      "path": "/home/student/docs/readme.txt",
+      "type": "file",
+      "mode": "644",
+      "encoding": "base64",
+      "data": "VmFyaWFudCAxMQo="
+    },
+    {
+      "path": "/home/student/notes.txt",
+      "type": "file",
+      "mode": "644",
+      "encoding": "base64",
+      "data": "0J/RgNC40LLQtdGCIQo="
+    },
+    {
+      "path": "/welcome.txt",
+      "type": "file",
+      "mode": "644",
+      "encoding": "base64",
+      "data": "V2VsY29tZQo="
+    }
+  ]
+}

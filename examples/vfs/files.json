@@ -1,0 +1,19 @@
+{
+  "name": "files",
+  "entries": [
+    {
+      "path": "/hello.txt",
+      "type": "file",
+      "mode": "644",
+      "encoding": "base64",
+      "data": "SGVsbG8sIFZGUyEK"
+    },
+    {
+      "path": "/data.bin",
+      "type": "file",
+      "mode": "644",
+      "encoding": "base64",
+      "data": "AAEC/w=="
+    }
+  ]
+}

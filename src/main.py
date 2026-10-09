@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .errors import ShellError
 from .shell import Shell
+from .vfs import VFS
 
 
 def parse_args(argv=None):
@@ -39,8 +40,9 @@ def main(argv=None):
     args = parse_args(argv)
     print(f"[config] vfs={args.vfs}")
     print(f"[config] script={args.script or '(не задан)'}")
-    shell = Shell(Path(args.vfs).stem)
+    shell = Shell()
     try:
+        shell.vfs = VFS.load(args.vfs)
         if args.script:
             run_script(shell, args.script)
     except ShellError as error:
