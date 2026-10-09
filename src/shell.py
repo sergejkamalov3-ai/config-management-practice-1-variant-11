@@ -18,6 +18,9 @@ class Shell:
             "cd": commands.cd,
             "find": commands.find,
             "clear": commands.clear,
+            "mkdir": commands.mkdir,
+            "chmod": commands.chmod,
+            "vfs-load": commands.vfs_load,
         }
 
     @property

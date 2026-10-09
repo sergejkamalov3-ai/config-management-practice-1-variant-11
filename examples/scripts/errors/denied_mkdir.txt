@@ -1,0 +1,3 @@
+chmod 500 /empty
+mkdir /empty/new
+exit

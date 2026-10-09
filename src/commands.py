@@ -111,3 +111,43 @@ def clear(shell, args):
     if args:
         raise ShellError("clear: аргументы не поддерживаются")
     print("\033[2J\033[H", end="", flush=True)
+
+
+def mkdir(shell, args):
+    """Создать один или несколько каталогов, включая режим -p."""
+    values = list(args)
+    parents = bool(values and values[0] == "-p")
+    if parents:
+        values.pop(0)
+    if values and values[0] == "--":
+        values.pop(0)
+    if not values or any(path.startswith("-") for path in values):
+        raise ShellError("mkdir: ожидается [-p] путь [путь ...]")
+    for path in values:
+        shell.vfs.mkdir(path, shell.cwd, parents)
+
+
+def chmod(shell, args):
+    """Изменить числовые права владельца, группы и остальных; -R."""
+    values = list(args)
+    recursive = bool(values and values[0] == "-R")
+    if recursive:
+        values.pop(0)
+    if len(values) < 2:
+        raise ShellError("chmod: ожидается [-R] режим путь [путь ...]")
+    mode = shell.vfs.parse_mode(values.pop(0))
+    targets = set()
+    for original in values:
+        path = shell.vfs.resolve(original, shell.cwd)
+        targets.update(shell.vfs.walk(path) if recursive else [path])
+    for path in targets:
+        shell.vfs.get(path).mode = mode
+
+
+def vfs_load(shell, args):
+    """Загрузить новый физический JSON, затем сбросить cwd в корень."""
+    if len(args) != 1:
+        raise ShellError("vfs-load: требуется один путь к JSON-файлу")
+    new_vfs = shell.vfs.load(args[0])
+    shell.vfs = new_vfs
+    shell.cwd = "/"

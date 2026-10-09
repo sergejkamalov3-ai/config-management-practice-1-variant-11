@@ -1,0 +1,3 @@
+chmod 100 /home
+ls /home
+exit

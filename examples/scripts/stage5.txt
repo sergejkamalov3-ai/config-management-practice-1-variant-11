@@ -1,0 +1,25 @@
+# Изменения только в памяти
+ls -al /
+mkdir /new /second
+mkdir -- /literal
+mkdir -p /
+mkdir -p /new/a/b/c
+cd /new/a
+mkdir local
+ls -l
+chmod 700 local
+ls -l local
+chmod -R 750 /new
+find /new -type d
+ls -l /new/a/b
+chmod 000 /second
+chmod 755 /second
+ls -l /
+# Переключение на другой образ сбрасывает каталог и имя в приглашении
+vfs-load examples/vfs/files.json
+ls -al /
+find / -type f
+# Повторная загрузка восстанавливает исходную VFS
+vfs-load examples/vfs/deep.json
+find /
+exit

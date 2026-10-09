@@ -1,7 +1,21 @@
 @echo off
 cd /d "%~dp0.."
 for %%N in (minimal files deep) do (
-    python -m src.main --vfs examples/vfs/%%N.json --script examples/scripts/stage3.txt
+    call :expect_ok python -m src.main --vfs examples/vfs/%%N.json --script examples/scripts/stage3.txt
+    if errorlevel 1 exit /b 1
 )
-python -m src.main --vfs examples/vfs/missing.json
-python -m src.main --vfs examples/vfs/invalid.json
+for %%N in (missing invalid) do (
+    call :expect_error python -m src.main --vfs examples/vfs/%%N.json
+    if errorlevel 1 exit /b 1
+)
+exit /b 0
+
+:expect_ok
+%*
+if errorlevel 1 exit /b 1
+exit /b 0
+
+:expect_error
+%*
+if not errorlevel 1 exit /b 1
+exit /b 0

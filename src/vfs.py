@@ -11,7 +11,6 @@ from pathlib import Path
 from .errors import ShellError
 
 DEFAULT_DIR_MODE = 0o755
-DEFAULT_FILE_MODE = 0o644
 
 
 @dataclass
@@ -140,7 +139,8 @@ class VFS:
         try:
             return self.nodes[path]
         except KeyError as error:
-            raise ShellError(f"нет такого файла или каталога: {path}") from error
+            message = f"нет такого файла или каталога: {path}"
+            raise ShellError(message) from error
 
     def require(self, path, bits):
         """Проверить биты владельца: эмулятор работает как владелец."""
@@ -187,3 +187,25 @@ class VFS:
             yield current
             if self.get(current).kind == "dir":
                 pending.extend(reversed(self.children(current)))
+
+    def mkdir(self, path, cwd="/", parents=False):
+        """Создать каталог; -p создает недостающих родителей в памяти."""
+        current = "/" if path.startswith("/") else cwd
+        parts = [part for part in path.split("/") if part]
+        if not parts and not parents:
+            raise ShellError(f"mkdir: каталог уже существует: {current}")
+        for index, part in enumerate(parts):
+            self.directory(current)
+            self.require(current, 0o100)
+            candidate = self.normalize(part, current)
+            last = index == len(parts) - 1
+            if candidate in self.nodes:
+                self.directory(candidate)
+                if last and not parents:
+                    raise ShellError(f"mkdir: уже существует: {candidate}")
+            else:
+                if not last and not parents:
+                    raise ShellError(f"mkdir: нет родителя: {candidate}")
+                self.require(current, 0o300)
+                self.nodes[candidate] = Node("dir", DEFAULT_DIR_MODE)
+            current = candidate

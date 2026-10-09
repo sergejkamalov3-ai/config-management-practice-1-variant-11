@@ -1,0 +1,2 @@
+vfs-load examples/vfs/invalid.json
+exit

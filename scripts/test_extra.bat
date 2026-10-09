@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0.."
-call :expect_ok python -m src.main --script examples/scripts/stage4.txt
+call :expect_ok python -m src.main --script examples/scripts/stage5.txt
 if errorlevel 1 exit /b 1
 for %%F in (examples\scripts\errors\*.txt) do (
     call :expect_error python -m src.main --script "%%F"

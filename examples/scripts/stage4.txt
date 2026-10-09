@@ -2,6 +2,7 @@ ls
 ls -a
 ls -l
 ls -al /
+ls -- /welcome.txt
 ls /welcome.txt /empty
 cd /home/student
 ls .
