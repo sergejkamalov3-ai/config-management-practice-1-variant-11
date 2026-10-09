@@ -9,3 +9,7 @@
 Тесты: `python -m unittest discover -s tests -v`.
 
 Пример: `ls /home`, `cd /home`, `unknown`, `exit`.
+
+Этап 2: `--vfs`, `--script`, вывод настроек и стартовый скрипт.
+Скрипт останавливается по первой ошибке, код завершения 1.
+Проверка параметров: `sh scripts/test_config.sh`.
