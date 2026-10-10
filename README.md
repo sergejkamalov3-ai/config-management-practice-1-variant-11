@@ -171,27 +171,41 @@ src/                 исходный код
 
 ## История этапов
 
-Репозиторий содержит служебный коммит инициализации и пять последовательных
-коммитов этапов, оформленных в стиле Conventional/Scoped Commits.
-Каждый этап имеет метку `stage-1` ... `stage-5`; состояния этапов различаются.
-На этапе 1 доступны заглушки ls/cd; на этапе 2 добавлены настройки, на этапе 3 VFS,
-на этапе 4 настоящие ls/cd/find/clear, на этапе 5 chmod/mkdir/vfs-load.
+Репозиторий содержит пять последовательных этапов разработки и отдельные
+коммиты исправлений. Коммиты оформлены в стиле Conventional/Scoped Commits.
+Для сдачи используются исправленные ветки `stage-1-fixed` ... `stage-5-fixed`.
+Основная ветка `main` содержит итоговую исправленную реализацию.
+
+| Этап | Реализованные возможности | Ссылка на ветку |
+| --- | --- | --- |
+| 1 | REPL, парсер, заглушки ls/cd, exit и ошибки | [stage-1-fixed](https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11/tree/stage-1-fixed) |
+| 2 | Параметры запуска и стартовый скрипт | [stage-2-fixed](https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11/tree/stage-2-fixed) |
+| 3 | Загрузка и проверка JSON VFS в памяти | [stage-3-fixed](https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11/tree/stage-3-fixed) |
+| 4 | Команды ls, cd, find, clear и проверки доступа | [stage-4-fixed](https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11/tree/stage-4-fixed) |
+| 5 | Команды chmod, mkdir, vfs-load | [stage-5-fixed](https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11/tree/stage-5-fixed) |
+
+[Публичный репозиторий](https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11).
+
+Исходные метки `stage-1` ... `stage-5` сохранены для истории;
+они указывают на версии до исправлений и не используются для повторной сдачи.
+
+Для показа раннего этапа из существующего клона:
 
 ```sh
-git log --oneline --reverse
-git tag
-git show stage-1:src/shell.py
-```
-
-Чтобы продемонстрировать ранний этап, перейдите к метке, затем вернитесь в main:
-
-```sh
-git switch --detach stage-1
+git fetch origin
+git switch --detach origin/stage-1-fixed
 python -m src.main
-git switch main
 ```
 
-Репозиторий опубликован в аккаунте `sergejkamalov3-ai`. Для локальной работы:
+После выхода из эмулятора командой `exit` можно переключить этап.
+Для возвращения к итоговой версии:
+
+```sh
+git switch main
+git pull --ff-only
+```
+
+Для локальной работы с новым клоном:
 
 ```sh
 git clone https://github.com/sergejkamalov3-ai/config-management-practice-1-variant-11.git
@@ -247,3 +261,4 @@ python -m unittest discover -s tests -v
 - `VFS.children`: Вернуть отсортированные непосредственные дочерние пути.
 - `VFS.walk`: Обойти дерево итеративно без зависимости от глубины рекурсии.
 - `VFS.mkdir`: Создать каталог; -p создает недостающих родителей в памяти.
+- `VFS.mkdir_component`: Проверить существующий компонент или создать каталог.
