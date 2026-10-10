@@ -11,6 +11,7 @@ from pathlib import Path
 from .errors import ShellError
 
 DEFAULT_DIR_MODE = 0o755
+FIRST_PRINTABLE_CODEPOINT = 32
 DEFAULT_FILE_MODE = 0o644
 
 
@@ -61,7 +62,7 @@ class VFS:
         name = payload.get("name")
         if not isinstance(name, str) or not name.strip():
             raise ShellError("VFS: требуется непустое имя name")
-        if any(ord(char) < 32 for char in name):
+        if any(ord(char) < FIRST_PRINTABLE_CODEPOINT for char in name):
             raise ShellError("VFS: управляющие символы в имени")
         if not isinstance(payload.get("entries"), list):
             raise ShellError("VFS: entries должен быть списком")
@@ -74,7 +75,8 @@ class VFS:
         parts = path.split("/")[1:]
         if path != "/" and any(p in ("", ".", "..") for p in parts):
             raise ShellError(f"VFS: некорректный путь {path}")
-        if any(char.isspace() or ord(char) < 32 for char in path):
+        if any(char.isspace() or ord(char) < FIRST_PRINTABLE_CODEPOINT
+               for char in path):
             raise ShellError("VFS: пробелы/управляющие символы в пути")
 
     @staticmethod
@@ -140,4 +142,5 @@ class VFS:
         try:
             return self.nodes[path]
         except KeyError as error:
-            raise ShellError(f"нет такого файла или каталога: {path}") from error
+            message = f"нет такого файла или каталога: {path}"
+            raise ShellError(message) from error
