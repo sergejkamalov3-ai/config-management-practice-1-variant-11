@@ -13,7 +13,7 @@ from src.vfs import VFS
 class ExtraTests(unittest.TestCase):
     """Проверить мутации в памяти и сохранность JSON на диске."""
 
-    def setUp(self):
+    def set_up(self):
         """Запомнить исходные байты и загрузить образ."""
         self.path = Path("examples/vfs/deep.json")
         self.before = self.path.read_bytes()
@@ -22,6 +22,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_mkdir(self):
         """Обычный и рекурсивный режимы создают каталоги."""
+        self.set_up()
         self.shell.execute("mkdir /a /b")
         self.shell.execute("mkdir -p /a/one/two/three")
         self.shell.execute("mkdir -p /a/one/two/three")
@@ -33,6 +34,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_chmod(self):
         """Изменение прав работает для файлов, каталогов и поддерева."""
+        self.set_up()
         self.shell.execute("chmod 600 /welcome.txt /empty")
         self.assertEqual(self.shell.vfs.get("/welcome.txt").mode, 0o600)
         self.shell.execute("chmod -R 700 /home")
@@ -41,6 +43,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_permissions_after_chmod(self):
         """Запрет прав проявляется в командах, владелец может их вернуть."""
+        self.set_up()
         self.shell.execute("chmod 000 /empty")
         for line in ("cd /empty", "ls /empty", "mkdir /empty/x"):
             with self.subTest(line=line), self.assertRaises(ShellError):
@@ -50,6 +53,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_disk_unchanged(self):
         """Ни mkdir, ни chmod не записывают JSON."""
+        self.set_up()
         self.shell.execute("mkdir -p /new/a/b")
         self.shell.execute("chmod -R 700 /home")
         self.assertEqual(self.path.read_bytes(), self.before)
@@ -59,6 +63,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_reload(self):
         """vfs-load меняет имя, дерево и текущий каталог."""
+        self.set_up()
         self.shell.execute("mkdir /new")
         self.shell.execute("cd /home")
         self.shell.execute("vfs-load examples/vfs/files.json")
@@ -68,6 +73,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_failed_reload_preserves_state(self):
         """Ошибка загрузки оставляет прежнюю VFS и cwd."""
+        self.set_up()
         self.shell.execute("cd /home")
         original = self.shell.vfs
         with self.assertRaises(ShellError):
@@ -77,6 +83,7 @@ class ExtraTests(unittest.TestCase):
 
     def test_bad_arguments(self):
         """Ошибочные формы дополнительных команд отклоняются."""
+        self.set_up()
         for line in ("mkdir", "mkdir -z /a", "mkdir /home",
                      "mkdir /missing/a", "mkdir -p /welcome.txt/a",
                      "chmod 888 /home", "chmod 700", "chmod 700 /bad",

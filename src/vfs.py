@@ -11,6 +11,7 @@ from pathlib import Path
 from .errors import ShellError
 
 DEFAULT_DIR_MODE = 0o755
+FIRST_PRINTABLE_CODEPOINT = 32
 
 
 @dataclass
@@ -60,7 +61,7 @@ class VFS:
         name = payload.get("name")
         if not isinstance(name, str) or not name.strip():
             raise ShellError("VFS: требуется непустое имя name")
-        if any(ord(char) < 32 for char in name):
+        if any(ord(char) < FIRST_PRINTABLE_CODEPOINT for char in name):
             raise ShellError("VFS: управляющие символы в имени")
         if not isinstance(payload.get("entries"), list):
             raise ShellError("VFS: entries должен быть списком")
@@ -73,7 +74,8 @@ class VFS:
         parts = path.split("/")[1:]
         if path != "/" and any(p in ("", ".", "..") for p in parts):
             raise ShellError(f"VFS: некорректный путь {path}")
-        if any(char.isspace() or ord(char) < 32 for char in path):
+        if any(char.isspace() or ord(char) < FIRST_PRINTABLE_CODEPOINT
+               for char in path):
             raise ShellError("VFS: пробелы/управляющие символы в пути")
 
     @staticmethod
@@ -199,13 +201,17 @@ class VFS:
             self.require(current, 0o100)
             candidate = self.normalize(part, current)
             last = index == len(parts) - 1
-            if candidate in self.nodes:
-                self.directory(candidate)
-                if last and not parents:
-                    raise ShellError(f"mkdir: уже существует: {candidate}")
-            else:
-                if not last and not parents:
-                    raise ShellError(f"mkdir: нет родителя: {candidate}")
-                self.require(current, 0o300)
-                self.nodes[candidate] = Node("dir", DEFAULT_DIR_MODE)
+            self.mkdir_component(current, candidate, last, parents)
             current = candidate
+
+    def mkdir_component(self, parent, candidate, last, parents):
+        """Проверить существующий компонент или создать недостающий каталог."""
+        if candidate in self.nodes:
+            self.directory(candidate)
+            if last and not parents:
+                raise ShellError(f"mkdir: уже существует: {candidate}")
+            return
+        if not last and not parents:
+            raise ShellError(f"mkdir: нет родителя: {candidate}")
+        self.require(parent, 0o300)
+        self.nodes[candidate] = Node("dir", DEFAULT_DIR_MODE)

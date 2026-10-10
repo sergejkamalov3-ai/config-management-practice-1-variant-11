@@ -5,6 +5,8 @@ import posixpath
 
 from .errors import ShellError
 
+MIN_CHMOD_ARGUMENTS = 2
+
 
 def parse_ls(args):
     """Выделить флаги -a, -l и список путей."""
@@ -133,7 +135,7 @@ def chmod(shell, args):
     recursive = bool(values and values[0] == "-R")
     if recursive:
         values.pop(0)
-    if len(values) < 2:
+    if len(values) < MIN_CHMOD_ARGUMENTS:
         raise ShellError("chmod: ожидается [-R] режим путь [путь ...]")
     mode = shell.vfs.parse_mode(values.pop(0))
     targets = set()
